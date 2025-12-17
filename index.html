@@ -230,7 +230,7 @@ const API = "https://xmas-walk-backend.onrender.com";
 
 async function refresh() {
   try {
-    const data = await fetch(API + "/status").then(r => r.json());
+    const data = await fetch(API + "/state").then(r => r.json());
 
     const state = data.state;
     const locations = data.locations;
