@@ -1,16 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Xmas Walk Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pub Crawl Stop</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f2f2f2;
+      padding: 2rem;
+    }
+
+    /* Main card with bevelled edges */
+    .stop-card {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 1.5rem;
+      border: 3px solid #333;
+      position: relative;
+      /* Bevel effect */
+      box-shadow:
+        inset 2px 2px 0 #ddd,
+        inset -2px -2px 0 #999,
+        4px 4px 0 #333;
+    }
+
+    /* Header */
+    .stop-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stop-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .stop-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    /* Content layout */
+    .stop-content {
+    display: grid;
+    grid-template-columns: 140px minmax(140px, 1fr); /* Text column min 200px, max flexible; image fixed */
+    gap: 1rem;
+    align-items: start; /* keeps image top-aligned */
+    }
+
+    @media (max-width: 500px) {
+    .stop-content {
+        grid-template-columns: 1fr;  /* stack text and image */
+    }
+    .stop-image {
+        width: 100%;
+        max-width: 140px;
+        margin: 0 auto;
+    }
+    }
+
+
+
+    /* Right info */
+    .stop-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .icon {
+      width: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    /* Left image */
+    .stop-image {
+    width: 100%;          /* or 64px */
+    object-fit: cover;
+    border: 2px solid #333;
+    box-shadow: inset 1px 1px 0 #ddd, inset -1px -1px 0 #999;
+    }
+
+    /* Small screen tweak */
+    @media (max-width: 600px) {
+      .stop-content {
+        grid-template-columns: 1fr;
+      }
+
+      .stop-image {
+        max-width: 200px;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <h1>🎄 Xmas Walk Status</h1>
 
-<p><strong>Current:</strong> <span id="current"></span></p>
+<p><strong>Current:</strong> </span></p>
 <p><strong>Next:</strong> <span id="next"></span></p>
 <p><strong>Status:</strong> <span id="mode"></span></p>
+
+<section class="stop-card">
+    <!-- Header -->
+    <div class="stop-header">
+      <div class="stop-number">1</div>
+      <div class="stop-title"><span id="current"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="stop-content">
+      <!-- Right side image -->
+      <img
+        class="stop-image"
+        src="img/drunk-santa.jpg"
+        alt="Venue photo"
+      />
+      <!-- Left side info -->
+      <div class="stop-info">
+        <div class="info-row">
+          <div class="icon">🗺️</div>
+          <div>123 Main Street, Downtown</div>
+        </div>
+        <div class="info-row">
+          <div class="icon">🌲</div>
+          <div>Kick things off with a relaxed drink and a group photo to start the crawl.</div>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+
 
 <script>
 const API = "https://xmas-walk-backend.onrender.com";
