@@ -5,33 +5,102 @@
 
 <h2>Update Xmas Walk</h2>
 
-<input id="c" placeholder="Current"><br><br>
-<input id="n" placeholder="Next"><br><br>
+<select id="currentSelect"></select>
+<select id="nextSelect"></select>
 
-<select id="m">
-  <option value="at_location">At location</option>
-  <option value="in_transit">In transit</option>
-  <option value="waiting">Waiting</option>
-</select><br><br>
+<select id="statusSelect">
+  <option value="In Transit">In Transit</option>
+  <option value="At Location">At Location</option>
+  <option value="Leaving">Leaving</option>
+</select>
+
+<input id="stopNumber" type="number" min="1">
+
+<div id="customFields" style="display:none">
+  <input id="customName" placeholder="Name">
+  <input id="customAddress" placeholder="Address">
+  <textarea id="customDescription" placeholder="Description"></textarea>
+  <input id="customImage" placeholder="Image URL">
+</div>
+
+
 
 <input id="k" type="password" placeholder="Admin Key"><br><br>
 
 <button onclick="update()">Update</button>
 
 <script>
-function update() {
-  fetch(`https://xmas-walk-backend.onrender.com/update?key=${k.value}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      current: c.value,
-      next: n.value,
-      mode: m.value
-    })
-  }).then(r => r.json())
-    .then(d => alert(JSON.stringify(d)));
+const API = "https://xmas-walk-backend.onrender.com";
+
+let locations = [
+  { name: "The Red Lion", address: "123 Main St", description: "Cozy pub with great ales", image: "https://example.com/redlion.jpg" },
+  { name: "The Dog & Duck", address: "456 Queen St", description: "Classic pub fare and beers", image: "https://example.com/dogduck.jpg" }
+];
+
+// Populate dropdowns
+function fillSelect(select) {
+  select.innerHTML = "";
+  locations.forEach((loc, i) => {
+    let option = document.createElement("option");
+    option.value = i;
+    option.textContent = loc.name;
+    select.appendChild(option);
+  });
+  let customOption = document.createElement("option");
+  customOption.value = "CUSTOM";
+  customOption.textContent = "CUSTOM";
+  select.appendChild(customOption);
+}
+
+fillSelect(currentSelect);
+fillSelect(nextSelect);
+
+// Show/hide custom fields
+function toggleCustomFields() {
+  if (currentSelect.value === "CUSTOM" || nextSelect.value === "CUSTOM") {
+    customFields.style.display = "block";
+  } else {
+    customFields.style.display = "none";
+  }
+}
+
+currentSelect.addEventListener("change", toggleCustomFields);
+nextSelect.addEventListener("change", toggleCustomFields);
+
+// Update function
+async function update() {
+  const payload = {
+    status: statusSelect.value,
+    stopNumber: parseInt(stopNumber.value),
+    current: currentSelect.value === "CUSTOM" ? null : parseInt(currentSelect.value),
+    next: nextSelect.value === "CUSTOM" ? null : parseInt(nextSelect.value),
+    custom: null
+  };
+
+  if (currentSelect.value === "CUSTOM" || nextSelect.value === "CUSTOM") {
+    payload.custom = {
+      name: customName.value,
+      address: customAddress.value,
+      description: customDescription.value,
+      image: customImage.value
+    };
+  }
+
+  const key = k.value;
+  try {
+    const res = await fetch(`${API}/update?key=${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    alert(JSON.stringify(data));
+  } catch (err) {
+    alert("Error updating: " + err);
+  }
 }
 </script>
+
 
 </body>
 </html>

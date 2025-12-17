@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pub Crawl Stop</title>
+  <title>Christmas Walk</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -13,19 +13,21 @@
 
     /* Main card with bevelled edges */
     .stop-card {
-      max-width: 700px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 1.5rem;
-      border: 3px solid #333;
-      position: relative;
-      /* Bevel effect */
-      box-shadow:
-        inset 2px 2px 0 #ddd,
-        inset -2px -2px 0 #999,
-        4px 4px 0 #333;
-    }
+    max-width: 700px;
+    margin: 0 auto;
+    background: #FFCCCB;
+    padding: 2rem;
+    border: 3px solid #FFCCCB;
+    border-radius: 16px; /* rounded corners */
+    position: relative;
+    
 
+    
+    /* Bevel effect with inset shadows */
+    box-shadow:
+
+        4px 4px 0 #333; /* outer bevel */
+    }
     /* Header */
     .stop-header {
       display: flex;
@@ -34,12 +36,31 @@
       margin-bottom: 1rem;
     }
 
+    .status-banner {
+    position: absolute;
+    top: 0px;               /* sits above the card */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    border: 0px solid #e74c3c;
+    background: #fca6a4;      /* red banner */
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.25rem 0;
+    border-top-left-radius: 14px;  /* match card rounding */
+    border-top-right-radius: 14px;
+    z-index: 1;
+    font-size: 0.95rem;
+    }
+
+
     .stop-number {
-      width: 48px;
-      height: 48px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      background: #333;
-      color: #fff;
+      background: white;
+      color: #FFCCCB;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -99,7 +120,7 @@
     .stop-image {
     width: 100%;          /* or 64px */
     object-fit: cover;
-    border: 2px solid #333;
+    border: 2px solid white;
     box-shadow: inset 1px 1px 0 #ddd, inset -1px -1px 0 #999;
     }
 
@@ -113,21 +134,59 @@
         max-width: 200px;
       }
     }
+
+    .next-card {
+    display: flex;               /* side-by-side sections */
+    max-width: 700px;
+    margin: 1.5rem auto;
+    border-radius: 16px;
+    overflow: hidden;            /* ensures rounded corners for both sides */
+    box-shadow:
+        inset 4px 4px 0 white,
+        inset -4px -4px 0 white,
+        4px 4px 0 #333;           /* same bevel as stop-card */
+    font-weight: bold;
+    font-size: 1rem;
+    }
+
+    /* Left side: label */
+    .next-card-left {
+    background-color: #3c9e65;  /* darker green */
+    color: #fff;
+    flex: 1;                     /* narrower */
+    display: flex;
+    align-items: center;         /* vertical centering */
+    justify-content: center;     /* horizontal centering */
+    padding: 1rem 1.5rem;
+    }
+
+    /* Right side: location */
+    .next-card-right {
+    background-color: #8ae6b0;  /* lighter green */
+    color: #333;
+    flex: 2;                     /* wider */
+    display: flex;
+    align-items: center;         /* vertical centering */
+    justify-content: flex-start; /* left-aligned text */
+    padding: 1rem 1.5rem;
+    }
+
+
+
+
   </style>
 </head>
 <body>
 
-<h1>🎄 Xmas Walk Status</h1>
-
-<p><strong>Current:</strong> </span></p>
-<p><strong>Next:</strong> <span id="next"></span></p>
-<p><strong>Status:</strong> <span id="mode"></span></p>
+<h1>Christmas Walk</h1>
 
 <section class="stop-card">
+    <div class="status-banner" id="status-banner"><span id="mode"></span></div>
+
     <!-- Header -->
     <div class="stop-header">
-      <div class="stop-number">1</div>
-      <div class="stop-title"><span id="current"></div>
+      <div class="stop-number"><span id="stopNumber"></span></div>
+      <div class="stop-title"><span id="currentName"></span></div>
     </div>
 
     <!-- Content -->
@@ -142,17 +201,27 @@
       <div class="stop-info">
         <div class="info-row">
           <div class="icon">🗺️</div>
-          <div>123 Main Street, Downtown</div>
+          <div><span id="currentAddress"></span></div>
         </div>
         <div class="info-row">
           <div class="icon">🌲</div>
-          <div>Kick things off with a relaxed drink and a group photo to start the crawl.</div>
+          <div><span id="currentDescription"></span></div>
         </div>
       </div>
 
 
     </div>
+</div>
   </section>
+
+<section class="next-card">
+  <div class="next-card-left">NEXT STOP:</div>
+  <div class="next-card-right">
+    <span id="nextName"></span>(<span id="nextAddress"></span>)
+  </div>
+</section>
+
+
 
 
 
