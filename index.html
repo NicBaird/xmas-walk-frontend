@@ -172,14 +172,26 @@
     padding: 1rem 1.5rem;
     }
 
+    .icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    }
+
+    .icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    }
 
 
 
   </style>
 </head>
 <body>
-
-<h1>Christmas Walk</h1>
 
 <section class="stop-card">
     <div class="status-banner" id="status-banner"><span id="status"></span></div>
@@ -203,11 +215,15 @@
       <!-- Left side info -->
       <div class="stop-info">
         <div class="info-row">
-          <div class="icon">🗺️</div>
+          <div class="icon">
+            <img src="img/icons/pin.svg" alt="Address">
+            </div>
           <div><span id="currentAddress"></span></div>
         </div>
         <div class="info-row">
-          <div class="icon">🌲</div>
+          <div class="icon">
+            <img src="img/icons/holly.svg" alt="Activity">
+            </div>
           <div><span id="currentDescription"></span></div>
         </div>
       </div>
