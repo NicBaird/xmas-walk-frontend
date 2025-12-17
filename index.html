@@ -251,15 +251,18 @@ async function refresh() {
     document.getElementById("currentName").textContent = currentLoc.name || "";
     document.getElementById("currentAddress").textContent = currentLoc.address || "";
     document.getElementById("currentDescription").textContent = currentLoc.description || "";
-    document.getElementById("currentImage").src =
-      currentLoc.image || "img/drunk-santa.jpg";
-
     const img = document.getElementById("currentImage");
-    img.onerror = () => {
-    img.src = "img/default-stop.jpg";
-    };
 
-    img.src = currentLoc.image || "img/default-stop.jpg";
+    const newSrc = currentLoc.image && currentLoc.image.trim() !== ""
+    ? currentLoc.image
+    : "img/drunk-santa.jpg";
+
+    if (img.src !== newSrc) {
+    img.src = newSrc;
+    }
+
+
+
 
 
     // Next stop
