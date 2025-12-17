@@ -32,28 +32,54 @@
 <script>
 const API = "https://xmas-walk-backend.onrender.com";
 
-let locations = [
-  { name: "The Red Lion", address: "123 Main St", description: "Cozy pub with great ales", image: "https://example.com/redlion.jpg" },
-  { name: "The Dog & Duck", address: "456 Queen St", description: "Classic pub fare and beers", image: "https://example.com/dogduck.jpg" }
-];
+let locations = [];
+
+async function loadLocations() {
+  const res = await fetch(API + "/state");
+  const data = await res.json();
+
+  locations = data.locations || [];
+
+  fillSelect(currentSelect);
+  fillSelect(nextSelect);
+
+  // Optional: pre-select current & next
+  if (data.state) {
+    if (data.state.current !== null) {
+      currentSelect.value = data.state.current;
+    }
+    if (data.state.next !== null) {
+      nextSelect.value = data.state.next;
+    }
+    if (data.state.status) {
+      statusSelect.value = data.state.status;
+    }
+    if (data.state.stopNumber) {
+      stopNumber.value = data.state.stopNumber;
+    }
+  }
+}
 
 // Populate dropdowns
 function fillSelect(select) {
   select.innerHTML = "";
+
   locations.forEach((loc, i) => {
-    let option = document.createElement("option");
+    const option = document.createElement("option");
     option.value = i;
     option.textContent = loc.name;
     select.appendChild(option);
   });
-  let customOption = document.createElement("option");
+
+  const customOption = document.createElement("option");
   customOption.value = "CUSTOM";
   customOption.textContent = "CUSTOM";
   select.appendChild(customOption);
 }
 
-fillSelect(currentSelect);
-fillSelect(nextSelect);
+
+loadLocations();
+
 
 // Show/hide custom fields
 function toggleCustomFields() {
