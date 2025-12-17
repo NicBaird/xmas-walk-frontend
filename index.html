@@ -254,6 +254,14 @@ async function refresh() {
     document.getElementById("currentImage").src =
       currentLoc.image || "img/drunk-santa.jpg";
 
+    const img = document.getElementById("currentImage");
+    img.onerror = () => {
+    img.src = "img/default-stop.jpg";
+    };
+
+    img.src = currentLoc.image || "img/default-stop.jpg";
+
+
     // Next stop
     document.getElementById("nextName").textContent = nextLoc.name || "";
     document.getElementById("nextAddress").textContent = nextLoc.address || "";
