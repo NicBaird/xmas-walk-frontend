@@ -181,7 +181,7 @@
 <h1>Christmas Walk</h1>
 
 <section class="stop-card">
-    <div class="status-banner" id="status-banner"><span id="mode"></span></div>
+    <div class="status-banner" id="status-banner"><span id="status"></span></div>
 
     <!-- Header -->
     <div class="stop-header">
@@ -192,11 +192,12 @@
     <!-- Content -->
     <div class="stop-content">
       <!-- Right side image -->
-      <img
+        <img
+        id="currentImage"
         class="stop-image"
         src="img/drunk-santa.jpg"
         alt="Venue photo"
-      />
+        />
       <!-- Left side info -->
       <div class="stop-info">
         <div class="info-row">
@@ -217,7 +218,7 @@
 <section class="next-card">
   <div class="next-card-left">NEXT STOP:</div>
   <div class="next-card-right">
-    <span id="nextName"></span>(<span id="nextAddress"></span>)
+    <p><span id="nextName"></span>(<span id="nextAddress"></span>)</p>
   </div>
 </section>
 
@@ -232,38 +233,43 @@ async function refresh() {
   try {
     const data = await fetch(API + "/state").then(r => r.json());
 
-    const state = data.state;
-    const locations = data.locations;
+    const state = data.state || {};
+    const locations = data.locations || [];
 
-    // Determine current and next location objects
-    const currentLoc = state.current !== null ? locations[state.current] : state.custom;
-    const nextLoc = state.next !== null ? locations[state.next] : state.custom;
+    const currentLoc =
+      state.current !== null && locations[state.current]
+        ? locations[state.current]
+        : {};
 
-    // Fill in current location
+    const nextLoc =
+      state.next !== null && locations[state.next]
+        ? locations[state.next]
+        : {};
+
+    // Current stop
     document.getElementById("currentName").textContent = currentLoc.name || "";
     document.getElementById("currentAddress").textContent = currentLoc.address || "";
     document.getElementById("currentDescription").textContent = currentLoc.description || "";
-    document.getElementById("currentImage").src = currentLoc.image || "";
+    document.getElementById("currentImage").src =
+      currentLoc.image || "img/drunk-santa.jpg";
 
-    // Fill in next location
+    // Next stop
     document.getElementById("nextName").textContent = nextLoc.name || "";
     document.getElementById("nextAddress").textContent = nextLoc.address || "";
-    document.getElementById("nextDescription").textContent = nextLoc.description || "";
-    document.getElementById("nextImage").src = nextLoc.image || "";
 
-    // Fill in status and stop number
+    // Status + stop number
     document.getElementById("status").textContent = state.status || "";
     document.getElementById("stopNumber").textContent = state.stopNumber || "";
     
   } catch (err) {
-    console.error("Error fetching status:", err);
+    console.error("Error fetching state:", err);
   }
 }
 
-// Refresh every 5 seconds
 setInterval(refresh, 5000);
 refresh();
 </script>
+
 
 
 </body>
