@@ -228,19 +228,43 @@
 <script>
 const API = "https://xmas-walk-backend.onrender.com";
 
-function refresh() {
-  fetch(API + "/status")
-    .then(r => r.json())
-    .then(data => {
-      current.textContent = data.current;
-      next.textContent = data.next;
-      mode.textContent = data.mode;
-    });
+async function refresh() {
+  try {
+    const data = await fetch(API + "/status").then(r => r.json());
+
+    const state = data.state;
+    const locations = data.locations;
+
+    // Determine current and next location objects
+    const currentLoc = state.current !== null ? locations[state.current] : state.custom;
+    const nextLoc = state.next !== null ? locations[state.next] : state.custom;
+
+    // Fill in current location
+    document.getElementById("currentName").textContent = currentLoc.name || "";
+    document.getElementById("currentAddress").textContent = currentLoc.address || "";
+    document.getElementById("currentDescription").textContent = currentLoc.description || "";
+    document.getElementById("currentImage").src = currentLoc.image || "";
+
+    // Fill in next location
+    document.getElementById("nextName").textContent = nextLoc.name || "";
+    document.getElementById("nextAddress").textContent = nextLoc.address || "";
+    document.getElementById("nextDescription").textContent = nextLoc.description || "";
+    document.getElementById("nextImage").src = nextLoc.image || "";
+
+    // Fill in status and stop number
+    document.getElementById("status").textContent = state.status || "";
+    document.getElementById("stopNumber").textContent = state.stopNumber || "";
+    
+  } catch (err) {
+    console.error("Error fetching status:", err);
+  }
 }
 
+// Refresh every 5 seconds
 setInterval(refresh, 5000);
 refresh();
 </script>
+
 
 </body>
 </html>
