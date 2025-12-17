@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Xmas Walk Tracker</title>
+</head>
+<body>
+
+<h1>🎄 Xmas Walk Status</h1>
+
+<p><strong>Current:</strong> <span id="current"></span></p>
+<p><strong>Next:</strong> <span id="next"></span></p>
+<p><strong>Status:</strong> <span id="mode"></span></p>
+
+<script>
+const API = "https://xmas-walk-backend.onrender.com";
+
+function refresh() {
+  fetch(API + "/status")
+    .then(r => r.json())
+    .then(data => {
+      current.textContent = data.current;
+      next.textContent = data.next;
+      mode.textContent = data.mode;
+    });
+}
+
+setInterval(refresh, 5000);
+refresh();
+</script>
+
+</body>
+</html>

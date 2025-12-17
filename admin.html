@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Xmas Walk Admin</title></head>
+<body>
+
+<h2>Update Xmas Walk</h2>
+
+<input id="c" placeholder="Current"><br><br>
+<input id="n" placeholder="Next"><br><br>
+
+<select id="m">
+  <option value="at_location">At location</option>
+  <option value="in_transit">In transit</option>
+  <option value="waiting">Waiting</option>
+</select><br><br>
+
+<input id="k" type="password" placeholder="Admin Key"><br><br>
+
+<button onclick="update()">Update</button>
+
+<script>
+function update() {
+  fetch(`https://xmas-walk-backend.onrender.com/update?key=${k.value}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      current: c.value,
+      next: n.value,
+      mode: m.value
+    })
+  }).then(r => r.json())
+    .then(d => alert(JSON.stringify(d)));
+}
+</script>
+
+</body>
+</html>
