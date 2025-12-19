@@ -16,11 +16,20 @@
 
 <input id="stopNumber" type="number" min="1">
 
-<div id="customFields" style="display:none">
-  <input id="customName" placeholder="Name">
-  <input id="customAddress" placeholder="Address">
-  <textarea id="customDescription" placeholder="Description"></textarea>
-  <input id="customImage" placeholder="Image URL">
+<h3>Custom Current Location</h3>
+<div id="customCurrent" style="display:none">
+  <input id="currentCustomName" placeholder="Name">
+  <input id="currentCustomAddress" placeholder="Address">
+  <textarea id="currentCustomDescription" placeholder="Description"></textarea>
+  <input id="currentCustomImage" placeholder="Image URL">
+</div>
+
+<h3>Custom Next Location</h3>
+<div id="customNext" style="display:none">
+  <input id="nextCustomName" placeholder="Name">
+  <input id="nextCustomAddress" placeholder="Address">
+  <textarea id="nextCustomDescription" placeholder="Description"></textarea>
+  <input id="nextCustomImage" placeholder="Image URL">
 </div>
 
 
@@ -35,29 +44,55 @@ const API = "https://xmas-walk-backend.onrender.com";
 let locations = [];
 
 async function loadLocations() {
-  const res = await fetch(API + "/state");
-  const data = await res.json();
+    try {
+        const res = await fetch(API + "/state");
+        const data = await res.json();
 
-  locations = data.locations || [];
+        locations = data.locations || [];
 
-  fillSelect(currentSelect);
-  fillSelect(nextSelect);
+        fillSelect(currentSelect);
+        fillSelect(nextSelect);
 
-  // Optional: pre-select current & next
-  if (data.state) {
-    if (data.state.current !== null) {
-      currentSelect.value = data.state.current;
+        // Optional: pre-select current & next
+        if (data.state) {
+            if (data.state.current !== null) {
+            currentSelect.value = data.state.current;
+            }
+            if (data.state.next !== null) {
+            nextSelect.value = data.state.next;
+            }
+            if (data.state.status) {
+            statusSelect.value = data.state.status;
+            }
+            if (data.state.stopNumber) {
+            stopNumber.value = data.state.stopNumber;
+            }
+        }
+        // Restore current custom
+            if (data.state.current === null && data.state.currentCustom) {
+            currentSelect.value = "CUSTOM";
+            toggleCustomFields();
+
+            currentCustomName.value = data.state.currentCustom.name || "";
+            currentCustomAddress.value = data.state.currentCustom.address || "";
+            currentCustomDescription.value = data.state.currentCustom.description || "";
+            currentCustomImage.value = data.state.currentCustom.image || "";
+            }
+
+            // Restore next custom
+            if (data.state.next === null && data.state.nextCustom) {
+            nextSelect.value = "CUSTOM";
+            toggleCustomFields();
+
+            nextCustomName.value = data.state.nextCustom.name || "";
+            nextCustomAddress.value = data.state.nextCustom.address || "";
+            nextCustomDescription.value = data.state.nextCustom.description || "";
+            nextCustomImage.value = data.state.nextCustom.image || "";
+            }
+            toggleCustomFields();
+    } catch (err) {
+        alert("Backend unavailable. Using cached UI only.")
     }
-    if (data.state.next !== null) {
-      nextSelect.value = data.state.next;
-    }
-    if (data.state.status) {
-      statusSelect.value = data.state.status;
-    }
-    if (data.state.stopNumber) {
-      stopNumber.value = data.state.stopNumber;
-    }
-  }
 }
 
 // Populate dropdowns
@@ -83,47 +118,55 @@ loadLocations();
 
 // Show/hide custom fields
 function toggleCustomFields() {
-  if (currentSelect.value === "CUSTOM" || nextSelect.value === "CUSTOM") {
-    customFields.style.display = "block";
-  } else {
-    customFields.style.display = "none";
-  }
+  customCurrent.style.display =
+    currentSelect.value === "CUSTOM" ? "block" : "none";
+
+  customNext.style.display =
+    nextSelect.value === "CUSTOM" ? "block" : "none";
 }
 
 currentSelect.addEventListener("change", toggleCustomFields);
 nextSelect.addEventListener("change", toggleCustomFields);
 
+
 // Update function
 async function update() {
   const payload = {
-    status: statusSelect.value,
-    stopNumber: parseInt(stopNumber.value),
-    current: currentSelect.value === "CUSTOM" ? null : parseInt(currentSelect.value),
-    next: nextSelect.value === "CUSTOM" ? null : parseInt(nextSelect.value),
-    custom: null
+  status: statusSelect.value,
+  stopNumber: parseInt(stopNumber.value),
+  current: currentSelect.value === "CUSTOM" ? null : parseInt(currentSelect.value),
+  next: nextSelect.value === "CUSTOM" ? null : parseInt(nextSelect.value),
+  currentCustom: null,
+  nextCustom: null
+};
+
+if (currentSelect.value === "CUSTOM") {
+  payload.currentCustom = {
+    name: currentCustomName.value,
+    address: currentCustomAddress.value,
+    description: currentCustomDescription.value,
+    image: currentCustomImage.value
   };
+}
 
-  if (currentSelect.value === "CUSTOM" || nextSelect.value === "CUSTOM") {
-    payload.custom = {
-      name: customName.value,
-      address: customAddress.value,
-      description: customDescription.value,
-      image: customImage.value
-    };
-  }
+if (nextSelect.value === "CUSTOM") {
+  payload.nextCustom = {
+    name: nextCustomName.value,
+    address: nextCustomAddress.value,
+    description: nextCustomDescription.value,
+    image: nextCustomImage.value
+  };
+}
+const res = await fetch(API + "/update?key=" + k.value, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
 
-  const key = k.value;
-  try {
-    const res = await fetch(`${API}/update?key=${key}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    alert(JSON.stringify(data));
-  } catch (err) {
-    alert("Error updating: " + err);
-  }
+const data = await res.json();
+alert(JSON.stringify(data, null, 2));
+
+
 }
 </script>
 

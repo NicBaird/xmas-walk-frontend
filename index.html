@@ -193,6 +193,14 @@
   </style>
 </head>
 <body>
+<div id="updateStatus" style="
+  text-align:center;
+  margin: 0.75rem auto;
+  font-size: 0.85rem;
+  color: #666;
+">
+  Updating…
+</div>
 
 <section class="stop-card">
     <div class="status-banner" id="status-banner"><span id="status"></span></div>
@@ -247,58 +255,86 @@
 
 <script>
 const API = "https://xmas-walk-backend.onrender.com";
+const CACHE_KEY = "xmas-walk-state";
 
-async function refresh() {
-  try {
-    const data = await fetch(API + "/state").then(r => r.json());
+const statusEl = document.getElementById("updateStatus");
 
-    const state = data.state || {};
-    const locations = data.locations || [];
+function render(data) {
+  const state = data.state || {};
+  const locations = data.locations || [];
 
-    const currentLoc =
-      state.current !== null && locations[state.current]
-        ? locations[state.current]
-        : {};
+  const currentLoc =
+    state.current !== null && locations[state.current]
+      ? locations[state.current]
+      : state.currentCustom || {};
 
-    const nextLoc =
-      state.next !== null && locations[state.next]
-        ? locations[state.next]
-        : {};
+  const nextLoc =
+    state.next !== null && locations[state.next]
+      ? locations[state.next]
+      : state.nextCustom || {};
 
-    // Current stop
-    document.getElementById("currentName").textContent = currentLoc.name || "";
-    document.getElementById("currentAddress").textContent = currentLoc.address || "";
-    document.getElementById("currentDescription").textContent = currentLoc.description || "";
-    const img = document.getElementById("currentImage");
+  // Current stop
+  document.getElementById("currentName").textContent = currentLoc.name || "";
+  document.getElementById("currentAddress").textContent = currentLoc.address || "";
+  document.getElementById("currentDescription").textContent = currentLoc.description || "";
 
-    const newSrc = currentLoc.image && currentLoc.image.trim() !== ""
+  const img = document.getElementById("currentImage");
+  const newSrc = currentLoc.image && currentLoc.image.trim() !== ""
     ? currentLoc.image
     : "img/drunk-santa.jpg";
 
-    if (img.src !== newSrc) {
-    img.src = newSrc;
-    }
+  if (img.src !== newSrc) img.src = newSrc;
 
+  // Next stop
+  document.getElementById("nextName").textContent = nextLoc.name || "";
+  document.getElementById("nextAddress").textContent = nextLoc.address || "";
 
+  // Status + stop number
+  document.getElementById("status").textContent = state.status || "";
+  document.getElementById("stopNumber").textContent = state.stopNumber || "";
+}
 
+async function refresh() {
+  statusEl.textContent = "Updating…";
 
+  try {
+    const res = await fetch(API + "/state", { cache: "no-store" });
+    if (!res.ok) throw new Error("Bad response");
 
-    // Next stop
-    document.getElementById("nextName").textContent = nextLoc.name || "";
-    document.getElementById("nextAddress").textContent = nextLoc.address || "";
+    const data = await res.json();
 
-    // Status + stop number
-    document.getElementById("status").textContent = state.status || "";
-    document.getElementById("stopNumber").textContent = state.stopNumber || "";
-    
+    // Render fresh data
+    render(data);
+
+    // Cache it
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+    statusEl.textContent = "Live";
   } catch (err) {
-    console.error("Error fetching state:", err);
+    console.warn("Using cached data:", err);
+
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      render(JSON.parse(cached));
+      statusEl.textContent = "Offline (showing last update)";
+    } else {
+      statusEl.textContent = "Offline";
+    }
   }
 }
 
+// Load cached data immediately (fast UI)
+const cached = localStorage.getItem(CACHE_KEY);
+if (cached) {
+  render(JSON.parse(cached));
+  statusEl.textContent = "Offline (cached)";
+}
+
+// Poll every 5 seconds
 setInterval(refresh, 5000);
 refresh();
 </script>
+
 
 
 
