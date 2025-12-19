@@ -263,15 +263,20 @@ function render(data) {
   const state = data.state || {};
   const locations = data.locations || [];
 
-  const currentLoc =
-    state.current !== null && locations[state.current]
-      ? locations[state.current]
-      : state.currentCustom || {};
+    const currentLoc =
+    state.currentCustom
+        ? state.currentCustom
+        : (state.current !== null && locations[state.current])
+        ? locations[state.current]
+        : {};
 
-  const nextLoc =
-    state.next !== null && locations[state.next]
-      ? locations[state.next]
-      : state.nextCustom || {};
+    const nextLoc =
+    state.nextCustom
+        ? state.nextCustom
+        : (state.next !== null && locations[state.next])
+        ? locations[state.next]
+        : {};
+
 
   // Current stop
   document.getElementById("currentName").textContent = currentLoc.name || "";

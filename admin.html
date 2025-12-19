@@ -131,43 +131,47 @@ nextSelect.addEventListener("change", toggleCustomFields);
 
 // Update function
 async function update() {
+  const usingCurrentCustom = currentSelect.value === "CUSTOM";
+  const usingNextCustom = nextSelect.value === "CUSTOM";
+
   const payload = {
-  status: statusSelect.value,
-  stopNumber: parseInt(stopNumber.value),
-  current: currentSelect.value === "CUSTOM" ? null : parseInt(currentSelect.value),
-  next: nextSelect.value === "CUSTOM" ? null : parseInt(nextSelect.value),
-  currentCustom: null,
-  nextCustom: null
-};
-
-if (currentSelect.value === "CUSTOM") {
-  payload.currentCustom = {
-    name: currentCustomName.value,
-    address: currentCustomAddress.value,
-    description: currentCustomDescription.value,
-    image: currentCustomImage.value
+    status: statusSelect.value,
+    stopNumber: parseInt(stopNumber.value),
+    current: usingCurrentCustom ? null : parseInt(currentSelect.value),
+    next: usingNextCustom ? null : parseInt(nextSelect.value),
+    currentCustom: null,
+    nextCustom: null
   };
+
+  if (usingCurrentCustom) {
+    payload.currentCustom = {
+      name: currentCustomName.value,
+      address: currentCustomAddress.value,
+      description: currentCustomDescription.value,
+      image: currentCustomImage.value
+    };
+  }
+
+  if (usingNextCustom) {
+    payload.nextCustom = {
+      name: nextCustomName.value,
+      address: nextCustomAddress.value,
+      description: nextCustomDescription.value,
+      image: nextCustomImage.value
+    };
+  }
+
+  const res = await fetch(API + "/update?key=" + k.value, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  localStorage.setItem("xmas-walk-force-refresh", Date.now().toString());
+  alert("Updated!");
 }
 
-if (nextSelect.value === "CUSTOM") {
-  payload.nextCustom = {
-    name: nextCustomName.value,
-    address: nextCustomAddress.value,
-    description: nextCustomDescription.value,
-    image: nextCustomImage.value
-  };
-}
-const res = await fetch(API + "/update?key=" + k.value, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload)
-});
-
-const data = await res.json();
-alert(JSON.stringify(data, null, 2));
-
-
-}
 </script>
 
 
